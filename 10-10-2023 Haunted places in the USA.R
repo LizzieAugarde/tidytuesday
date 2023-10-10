@@ -40,4 +40,5 @@ number_by_state <- left_join(number_by_state, state_size, by = c("state" = "Stat
 number_by_state <- number_by_state %>%
   mutate(number_per_sq_mile = (number_places/area)*1000)
 
+test
          
