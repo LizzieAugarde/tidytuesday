@@ -24,7 +24,18 @@ patient_risk_profiles <- patient_risk_profiles %>%
   select(-c(number_age_group, number_sex, number_prior_condition, personId)) %>%
   mutate(across(where(is.numeric), ~.*100))
 
+#mean risk across groups of patients by age, sex and prior conditions
 mean_risk_by_group <- patient_risk_profiles %>%
   group_by(age_group, sex, prior_condition) %>%
   summarise(across(everything(), list(mean))) %>%
-  mutate(across(where(is.numeric), ~round(., 2)))
+  mutate(across(where(is.numeric), ~round(., 2))) %>%
+  mutate(prior_condition = str_to_title(str_replace(prior_condition, " in prior year", ""))) %>%
+  mutate(sex = str_to_title(sex))
+
+#tidying column names for app
+colstrings_to_remove <- c("predicted risk of ", "predicted risk of  ", "_1")
+
+for (string in colstrings_to_remove) {
+  colnames(mean_risk_by_group) <- str_replace(colnames(mean_risk_by_group), string, "")
+  colnames(mean_risk_by_group) <- str_trim(colnames(mean_risk_by_group))
+}
