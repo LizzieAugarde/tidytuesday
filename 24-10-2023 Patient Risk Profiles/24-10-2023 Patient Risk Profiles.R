@@ -21,8 +21,10 @@ patient_risk_profiles <- patient_risk_profiles %>%
          sex = gsub('Sex = ', '', sex)) %>%
   mutate(prior_condition = ifelse(number_prior_condition == 0, paste0("No ", prior_condition), prior_condition)) %>%
   filter(number_age_group == 1, number_sex == 1) %>%
-  select(-c(number_age_group, number_sex, number_prior_condition, personId))
+  select(-c(number_age_group, number_sex, number_prior_condition, personId)) %>%
+  mutate(across(where(is.numeric), ~.*100))
 
 mean_risk_by_group <- patient_risk_profiles %>%
   group_by(age_group, sex, prior_condition) %>%
-  summarise(across(everything(), list(mean)))
+  summarise(across(everything(), list(mean))) %>%
+  mutate(across(where(is.numeric), ~round(., 2)))
